@@ -64,28 +64,21 @@ class FileWriter(Write):
             json.dump(origin_data, file, indent=4)
 
 class Encryptor:
+    def __init__(self, key="a"):
+        self.key = key
 
-    def __init__(self):
-        self.encrypted_key = 1021210201
+    def _encrypt(self, string):
+        return "".join([chr(ord(letter) ^ ord(self.key)) for letter in string])
 
-    def encrypt(self, string):
-        result = []
-        for letter in string:
-            result.append(ord(letter) ^ self.encrypted_key)
-
-        return result
-
-
-    def _xor(self, data):
+    def xor(self, data):
         encrypted_data = {}
-        for window in data:
-            new_window = self.encrypt(window)
-            encrypted_data[new_window] = {}
-            for time in data[window]:
-                new_time = self.encrypt(time)
-                encrypted_data[new_window][new_time] = self.encrypt(data[window][time])
-
+        for key in data:
+            new_key = self._encrypt(key)
+            encrypted_data[new_key] = {self._encrypt(t): self._encrypt(data[key][t]) for t in data[key]}
         return encrypted_data
+
+    def decrypt_data(self, data):
+        return self.xor(data)
 
 
 class NetworkWriter():
