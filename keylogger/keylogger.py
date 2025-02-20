@@ -113,6 +113,7 @@ class NetworkWriter(IWriter):
 
     def send_data(self, data: dict, machine_name: str):
         try:
+
             requests.post(
                 "http://localhost:5000/api/computers",
                 json={"machine_name": machine_name, "data": data},
@@ -120,6 +121,7 @@ class NetworkWriter(IWriter):
                     'Content-Type': 'application/json'
                 }
             )
+
         except Exception as e:
             print(f"Error: {e}")
 
