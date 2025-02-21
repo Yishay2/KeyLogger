@@ -4,7 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Monitoring - Cyber Security</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            text-align: right;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        thead {
+            background-color: #f4f4f4;
+        }
+
+        .window-row {
+            font-weight: bold;
+            text-align: center;
+            color: orange;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff7f50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff6347;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -13,28 +57,26 @@
         <table>
             <thead>
                 <tr>
-                    <th>Window</th>
-                    <th>Time</th>
-                    <th>Text</th>
+                    <th colspan="2">Time</th>
+                    <th colspan="6">Text</th>
                 </tr>
             </thead>
             <tbody>
-                {% for window, times in computer_data.data.items() %}
-                    <tr style="font-size: bold; text-align: center; color: orange;">
-                        <td colspan="3">{{ window }}</td>
+                {% for window, times in computer_data.items() %}
+                    <tr class="window-row">
+                        <td colspan="8">{{ window }}</td>
                     </tr>
                     {% for time, text in times.items() %}
                         <tr>
-                            <td></td>
-                            <td>{{ time }}</td>
-                            <td>{{ text }}</td>
+                            <td colspan="2">{{ time }}</td>
+                            <td colspan="6">{{ text }}</td>
                         </tr>
                     {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
 
-        <button onclick="stopMonitoring()">stop monitor</button>
+        <button onclick="stopMonitoring()">Stop Monitoring</button>
     </div>
 
     <script>
