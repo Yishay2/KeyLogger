@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Cyber Security Monitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .red-bg {
+            background: #ff4d4d;
+        }
+
+        .green-bg {
+            background: #4CAF50;
+        }
+
+    </style>
 </head>
 <body>
     <h1>Keylogger</h1>
@@ -13,17 +24,22 @@
         <ul class="computer-list">
             {% for computer in computers %}
                 <li>
-                    computer: {{ computer.machine_name }}
-                    <button onclick="changePath('{{computer.machine_name}}')">start monitor</button>
+                    <a href="http://localhost:5000/api/computers/{{ computer.machine_name }}">computer: {{ computer.machine_name }}</a>
+                    <button class="{{ 'red-bg' if computer.is_running else 'green-bg' }}" id="monitor_{{ computer.machine_name }}" onclick="updateFlag('{{ computer.machine_name }}')">
+                        {{ "stop monitor" if computer.is_running else "start monitor" }}
+                    </button>
                 </li>
             {% endfor %}
         </ul>
     </div>
 
     <script>
-
-        function changePath(computerName){
-            window.location.href = `http://localhost:5000/api/computers/${computerName}`;
+        const updateFlag = async (computerName) => {
+            let monitor = document.getElementById(`monitor_${computerName}`);
+            let flag = monitor.innerText === "start monitor" ? 1 : 0;
+            await fetch(`http://localhost:5000/api/computers/update_monitor/${computerName}/${flag}`);
+            monitor.style.background = flag ? "#ff4d4d" : "#4CAF50";
+            monitor.innerText = flag ? "stop monitor" : "start monitor";
         }
 
     </script>
