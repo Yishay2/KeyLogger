@@ -39,8 +39,7 @@
     <script>
         const updateFlag = async (computerName) => {
             let monitor = document.getElementById(`monitor_${computerName}`);
-            let flag = monit
-            or.innerText === "start monitor" ? 1 : 0;
+            let flag = monitor.innerText === "start monitor" ? 1 : 0;
             await fetch(`http://localhost:5000/api/computers/update_monitor/${computerName}/${flag}`);
             monitor.style.background = flag ? "#ff4d4d" : "#4CAF50";
             monitor.innerText = flag ? "stop monitor" : "start monitor";
