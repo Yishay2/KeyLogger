@@ -6,17 +6,51 @@
     <title>Login - Cyber Security Monitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
 </head>
 
 <body>
+    <h1 style="font-size: 3em;">welcome to KeyLogger web</h1>
     <div class="login-container">
-        <h2>welcome to KeyLogger web</h2>
-        <h2>התחברות למערכת</h2>
-        <form action="dashbord.html" method="get">
-            <input type="text" name="username" placeholder="שם משתמש" required>
-            <input type="password" name="password" placeholder="סיסמה" required>
+        <h2>Log In</h2>
+        <form id="loginForm">
+            <input type="text" id="name" name="username" placeholder="username" required>
+            <input type="password" id="password" name="password" placeholder="password" required>
+            <p style="display: none; color: #ff4d4d;" class="error">You entered wrong username or password</p>
             <button type="submit">התחבר</button>
         </form>
     </div>
+
+<script>
+    const form = document.getElementById("loginForm");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const username = document.getElementById("name").value;
+        const password = document.getElementById("password").value;
+        const errorMsg = document.querySelector(".error");
+
+        if (username && password) {
+            try {
+                let response = await fetch(`http://localhost:5000/api/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    window.location.href = "/api/dashboard";
+                } else {
+                    errorMsg.style.display = "block"; // הצגת ההודעה
+                }
+            } catch (e) {
+                errorMsg.style.display = "block"; // הצגת ההודעה גם במקרה של כשל תקשורתי
+            }
+        }
+    });
+</script>
 </body>
 </html>

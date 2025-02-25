@@ -22,8 +22,29 @@ encryptor = Encryptor()
 
 @app.route("/")
 def home():
-    computers = list(db_collection.find({}, {"_id": 0, "machine_name": 1, "is_running": 1}))
+    return render_template("login.html")
+
+@app.route("/api/login", methods=["POST"])
+def login():
+
+    data = request.json
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    user = db_collection.find_one({"admin": username})
+    if user and user["password"] == password:
+        return jsonify({"success": True}), 200
+
+    return jsonify({"error": "Invalid username or password"}), 401
+
+@app.route("/api/dashboard")
+def dashboard():
+    computers = list(db_collection.find({"machine_name": {"$exists": True}}, {"machine_name": 1, "is_running": 1}))
     return render_template("dashboard.html", computers=computers)
+
 
 @app.route("/api/computers", methods=["GET", "POST"])
 def get_computers():
