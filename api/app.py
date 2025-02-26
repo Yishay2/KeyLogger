@@ -84,6 +84,7 @@ def update_monitor(computer_name, flag):
     except Exception as e:
         return jsonify({"Error: ": "Failed to change the monitor"})
 
+
 @app.route("/api/computers/is_computer_running/<computer>", methods=["GET"])
 def is_computer_running(computer):
     computer_data = db_collection.find_one({"machine_name": computer}, {"_id": 0})
