@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Cyber Security Monitor</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="style.css">
 
     <style>
         .red-bg {
@@ -14,34 +14,51 @@
         .green-bg {
             background: #4CAF50;
         }
-
     </style>
 </head>
 <body>
     <h1>Keylogger</h1>
     <div class="container">
-        <h2>available computers</h2>
-        <ul class="computer-list">
-            {% for computer in computers %}
-                <li>
-                    <a href="http://localhost:5000/api/computers/{{ computer.machine_name }}">computer: {{ computer.machine_name }}</a>
-                    <button class="{{ 'red-bg' if computer.is_running else 'green-bg' }}" id="monitor_{{ computer.machine_name }}" onclick="updateFlag('{{ computer.machine_name }}')">
-                        {{ "stop monitor" if computer.is_running else "start monitor" }}
-                    </button>
-                </li>
-            {% endfor %}
-        </ul>
+        <h2>Available Computers</h2>
+        <ul class="computer-list"></ul>
     </div>
 
     <script>
-        const updateFlag = async (computerName) => {
-            let monitor = document.getElementById(`monitor_${computerName}`);
-            let flag = monitor.innerText === "start monitor" ? 1 : 0;
+        const updateFlag = async (computerName, button) => {
+            let flag = button.innerText === "start monitor" ? 1 : 0;
             await fetch(`http://localhost:5000/api/computers/update_monitor/${computerName}/${flag}`);
-            monitor.style.background = flag ? "#ff4d4d" : "#4CAF50";
-            monitor.innerText = flag ? "stop monitor" : "start monitor";
-        }
+            button.className = flag ? "red-bg" : "green-bg";
+            button.innerText = flag ? "stop monitor" : "start monitor";
+        };
 
+        const fetchComputers = async () => {
+            let response = await fetch(`http://localhost:5000/api/computers`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            const computers = await response.json();
+            const computerList = document.querySelector(".computer-list");
+
+            computers.forEach(computer => {
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                let button = document.createElement("button");
+
+                a.href = `/static/monitor.html?machine_name=${computer.machine_name}`;
+                a.innerText = computer.machine_name;
+
+                button.className = computer.is_running ? 'red-bg' : 'green-bg';
+                button.innerText = computer.is_running ? "stop monitor" : "start monitor";
+                button.id = `monitor_${computer.machine_name}`;
+                button.addEventListener("click", () => updateFlag(computer.machine_name, button));
+
+                li.append(a, button);
+                computerList.appendChild(li);
+            });
+        };
+
+        fetchComputers();
     </script>
 </body>
 </html>

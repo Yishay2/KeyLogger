@@ -40,12 +40,6 @@ def login():
 
     return jsonify({"error": "Invalid username or password"}), 401
 
-@app.route("/api/dashboard")
-def dashboard():
-    computers = list(db_collection.find({"machine_name": {"$exists": True}}, {"machine_name": 1, "is_running": 1}))
-    return render_template("dashboard.html", computers=computers)
-
-
 @app.route("/api/computers", methods=["GET", "POST"])
 def get_computers():
 
@@ -78,9 +72,8 @@ def get_computers():
 
         return jsonify({"message": "Data saved successfully"}), 201
 
-
     elif request.method == "GET":
-        all_data = list(db_collection.find({}, {'_id': 0}))
+        all_data = list(db_collection.find({"machine_name": {"$exists": True}}, {'_id': 0}))
         return jsonify(all_data), 200
 
 @app.route("/api/computers/update_monitor/<computer_name>/<flag>")
@@ -109,7 +102,7 @@ def get_computer(computer):
         computer_data = db_collection.find_one({"machine_name": computer}, {'_id': 0})
         if not computer_data:
             return jsonify({"error": "Computer not found!"}), 404
-        return render_template("monitor.html", computer_data=encryptor.xor(computer_data["data"]))
+        return encryptor.xor(computer_data["data"])
     except Exception as e:
         return jsonify({"Error": str(e)}), 500
 

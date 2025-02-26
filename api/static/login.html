@@ -6,7 +6,6 @@
     <title>Login - Cyber Security Monitor</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-
 </head>
 
 <body>
@@ -42,12 +41,12 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = "/api/dashboard";
+                    window.location.href = "/static/dashboard.html";
                 } else {
-                    errorMsg.style.display = "block"; // הצגת ההודעה
+                    errorMsg.style.display = "block";
                 }
             } catch (e) {
-                errorMsg.style.display = "block"; // הצגת ההודעה גם במקרה של כשל תקשורתי
+                errorMsg.style.display = "block";
             }
         }
     });
