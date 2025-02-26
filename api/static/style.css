@@ -53,6 +53,15 @@ h1{
     color: white;
 }
 
+li {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: #ccc;
+}
+
 .login-container > #loginForm > *{
     padding: 8px 4px;
     margin: 12px;
@@ -80,9 +89,6 @@ button {
     margin-top: 12px;
 }
 
-button:hover {
-    background: #45a049;
-}
 .container {
     background: rgba(0, 0, 0, 0.7); /* רקע שחור שקוף */
     padding: 20px;

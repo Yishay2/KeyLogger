@@ -52,7 +52,7 @@
 </head>
 <body>
     <div class="container">
-        <h2 id="computer-name">{{ computer_data.machine_name }}</h2>
+        <h2 id="computer-name" style="text-align: center;"></h2>
 
         <table>
             <thead>
@@ -61,25 +61,56 @@
                     <th colspan="6">Text</th>
                 </tr>
             </thead>
-            <tbody>
-                {% for window, times in computer_data.items() %}
-                    <tr class="window-row">
-                        <td colspan="8">{{ window }}</td>
-                    </tr>
-                    {% for time, text in times.items() %}
-                        <tr>
-                            <td colspan="2">{{ time }}</td>
-                            <td colspan="6">{{ text }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </tbody>
+            <tbody id="table-body"></tbody>
         </table>
 
     </div>
 
     <script>
 
+        let params = new URLSearchParams(document.location.search);
+        let machine_name = params.get("machine_name");
+
+        document.getElementById("computer-name").innerText = machine_name;
+
+        const fetchData = async () => {
+
+            const response = await fetch(`http://localhost:5000/api/computers/${machine_name}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const computerData = await response.json();
+            console.log(computerData);
+            const tableBody = document.getElementById("table-body");
+
+            Object.entries(computerData).forEach(([window, times]) => {
+                const tr1 = document.createElement("tr");
+                const td1 = document.createElement("td");
+                td1.innerText = window;
+                td1.className = "window-row";
+                td1.setAttribute("colspan", "8");
+                tr1.appendChild(td1);
+                tableBody.append(tr1);
+
+                Object.entries(times).forEach(([time, value]) => {
+                    const tr2 = document.createElement("tr");
+                    const td2 = document.createElement("td");
+                    const td3 = document.createElement("td");
+
+                    td2.innerText = time;
+                    td2.setAttribute("colspan", 2);
+                    td3.innerText = value;
+                    td3.setAttribute("colspan", 6);
+                    tr2.append(td2, td3);
+                    tableBody.appendChild(tr2);
+                });
+            })
+        }
+
+        fetchData();
     </script>
 </body>
 </html>
