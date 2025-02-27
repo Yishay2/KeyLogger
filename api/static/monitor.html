@@ -83,8 +83,10 @@
             });
 
             const computerData = await response.json();
-            console.log(computerData);
             const tableBody = document.getElementById("table-body");
+
+            console.log(computerData);
+            console.log(Object.entries(computerData));
 
             Object.entries(computerData).forEach(([window, times]) => {
                 const tr1 = document.createElement("tr");

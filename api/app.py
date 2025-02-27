@@ -7,8 +7,8 @@ import sys
 import json
 import os
 
+from keylogger.Encryptor import Encryptor
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from keylogger.keylogger import Encryptor
 
 app = Flask(__name__, template_folder="static")
 CORS(app)
