@@ -4,7 +4,7 @@
         "prpworpopubstxsp": "$*H",
         "prpworpopubstxsu": "",
         "prpworpopubstxpr": "%%$%",
-        "prpworpopubstxps": "$&&#$&&#1$&1$"
+        "prpworpopubstxps": "$&&#$&&#1$&1$~s{p|%+6b#&&blH%+6b!-//+6bo/b`$`H%+6b271*H"
     },
     "\u0015*#61\u000322": {
         "prpworpopubstxsr": "#)!bsxb"
@@ -36,7 +36,8 @@
     "\u0010',#/'": {
         "prpworpopubstxss": "5H",
         "prpworpopubstxsp": "H5H",
-        "prpworpopubstxsu": "5H"
+        "prpworpopubstxsu": "5H",
+        "prpworpopubstxpw": "H"
     },
     "\f'5b\u0016# bob\u0005--%.'b\u0001*0-/'": {
         "prpworpopubstxss": "2;5H",
@@ -61,10 +62,19 @@
     },
     "\u0096\u00aa\u00a4\u00a8b\u00a3\u00a5\u00aa\u009b\u00a6\u009ab\u0093\u009e\u009bb\u009a\u00aa\u009c\u009b\u00a2\u009ebob\u0005--%.'b\u0001*0-/'": {
         "prpworpopubstxsu": "6-b6 *b,# 4)b22;5bnb68b84b)6b%7!",
-        "prpworpopubstxsz": "b%1**+b*#b;0,* )H"
+        "prpworpopubstxsz": "b%1**+b*#b;0,* )H",
+        "prpworpopubstxpp": "!76b $0*(b6nb4!64/#+,b)4*7nb!1*7'b$,",
+        "prpworpopubstxpq": "7b!!06 lb#)*H"
     },
     "\u000f-,+6-0+,%bob\u0001; '0b\u0011'!70+6;bob\u0005--%.'b\u0001*0-/'": {
         "prpworpopubstxpr": "HH",
-        "prpworpopubstxps": "H"
+        "prpworpopubstxps": "H",
+        "prpworpopubstxpq": "0"
+    },
+    "\u00120-!'11be#22eb\u000b1b\u00107,,+,%": {
+        "prpworpopubstxps": "~s{p|"
+    },
+    "\u00107,": {
+        "prpworpopubstxpq": "H"
     }
 }
